@@ -1,0 +1,120 @@
+When we need to create header in we need
+    1. Appbar
+    2. toolbar
+
+Appbar position is deafault is fixed if you put static
+
+for Scroll effect we need use elevation Scroll and removing the window in the function
+        1. UseScrollTrigger
+        2.  Elevationscroll
+NOte : need to install miuistyles
+For our custmization we use theme
+        1. themeprovider
+            In App Js we need to wrapper all components into themeprovider
+
+To custmization we need create Theme.js file in UI
+    in that for material we createMUiTheme
+    creating a function of createMUiTheme
+
+Import the theme in Appjs and in themeprovider theme as props to access the styling 
+
+Typography used for text like H1,TO H6 Display ans subtitle, caption,Body1,body2
+        1. Variant 
+
+We need create Make styles function inside usestyle for access theme styles 
+...theme.mixin.toolbar is used for Display text below the toolbar
+
+To remove the left side space in the header we need use gutter disabled
+
+disable gutters are used for remove the padding of the logo
+
+
+For creating links we are using tabs and tab in material-UI
+    marginLeft:"auto" for giving maximum space b/w logo and tabs
+    minwidth is used for the reduce space b/w the tabs
+    textTransform is used for to convert all uppercase to First letter and all letters in small
+
+For creating the button 
+    Variant="contained" 
+
+
+In Appjs we need to Import browserrouter,route and switch
+<browserrouter>  
+<switch>
+            <Route exact means deafault true 
+                   components means we need give components name
+                   to means give the location of path like Home, About us exact 
+</switch>
+  </browserrouter>
+
+we need route the components so in header so
+in tab we need to components value as Link and to as the path
+
+
+ switch (window.location.pathname) {
+            case "/": {
+                if (value !== 0) {
+                    setValue(0)
+                }
+                break;
+            }
+            case "/services": {
+                if (value !== 1) {
+                    setValue(1)
+                    setSelectedIndex(0)
+                }
+                break;
+            }
+            case "/customsoftware": {
+                if (value !== 1) {
+                    setValue(1)
+                    setSelectedIndex(1)
+                }
+                break;
+            }
+            case "/moblieapps": {
+                if (value !== 1) {
+                    setValue(1)
+                    setSelectedIndex(2)
+                }
+                break;
+            }
+
+
+            case "/websites": {
+                if (value !== 1) {
+                    setValue(1)
+                    setSelectedIndex(3)
+                }
+                break;
+            }
+            case "/revolution": {
+                if (value !== 2) {
+                    setValue(2)
+                }
+                break;
+            }
+            case "/about": {
+                if (value !== 3) {
+                    setValue(3)
+                }
+                break;
+            }
+
+            case "/contact": {
+                if (value !== 4) {
+                    setValue(4)
+                }
+                break;
+            }
+            case "/estimate": {
+                if (value !== 5) {
+                    setValue(5)
+                }
+
+                break;
+            }
+            default:
+                break;
+        }
+
