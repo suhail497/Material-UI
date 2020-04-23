@@ -1,0 +1,570 @@
+When we need to create header in we need
+    1. Appbar
+    2. toolbar
+
+Appbar position is deafault is fixed if you put static
+
+for Scroll effect we need use elevation Scroll and removing the window in the function
+        1. UseScrollTrigger
+        2.  Elevationscroll
+NOte : need to install miuistyles
+For our custmization we use theme
+        1. themeprovider
+            In App Js we need to wrapper all components into themeprovider
+
+To custmization we need create Theme.js file in UI
+    in that for material we createMUiTheme
+    creating a function of createMUiTheme
+
+Import the theme in Appjs and in themeprovider theme as props to access the styling 
+
+Typography used for text like H1,TO H6 Display ans subtitle, caption,Body1,body2
+        1. Variant 
+
+We need create Make styles function inside usestyle for access theme styles 
+...theme.mixin.toolbar is used for Display text below the toolbar
+
+To remove the left side space in the header we need use gutter disabled
+
+disable gutters are used for remove the padding of the logo
+
+
+For creating links we are using tabs and tab in material-UI
+    marginLeft:"auto" for giving maximum space b/w logo and tabs
+    minwidth is used for the reduce space b/w the tabs
+    textTransform is used for to convert all uppercase to First letter and all letters in small
+
+For creating the button 
+    Variant="contained" 
+
+
+In Appjs we need to Import browserrouter,route and switch
+<browserrouter>  
+<switch>
+            <Route exact means deafault true 
+                   components means we need give components name
+                   to means give the location of path like Home, About us exact 
+</switch>
+  </browserrouter>
+
+we need route the components so in header so
+in tab we need to components value as Link and to as the path
+
+
+
+import React, { useState, useEffect } from "react";
+import { AppBar, Toolbar, Button, MenuItem, Menu, List, ListItem, ListItemText } from "@material-ui/core";
+import useScrollTrigger from '@material-ui/core/useScrollTrigger'; //for scrolling effect
+import { makeStyles } from "@material-ui/styles";
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import logo from "../../assets/logo.svg";
+import { Link } from "react-router-dom"
+// For responsive design
+import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { useTheme } from '@material-ui/core/styles';
+
+// menu icons
+import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
+import MenuIcon from '@material-ui/icons/Menu';
+import IconButton from '@material-ui/core/IconButton';
+
+
+
+
+function ElevationScroll(props) {
+    const { children } = props;
+
+    const trigger = useScrollTrigger({
+        disableHysteresis: true,
+        threshold: 0,
+    });
+
+    return React.cloneElement(children, {
+        elevation: trigger ? 4 : 0,
+    });
+}
+
+const useStyles = makeStyles(theme => ({
+    toolbarMargin: {
+        ...theme.mixins.toolbar,
+        marginBottom: "2em",
+        // media  
+        [theme.breakpoints.down("md")]: {
+            marginBottom: "1.5em"
+        },
+        [theme.breakpoints.down("xs")]: {
+            height: "1em"
+        }
+    },
+    logo: {
+        height: "7em",
+        // media  
+        [theme.breakpoints.down("md")]: {
+            height: "6em"
+        },
+        [theme.breakpoints.down("xs")]: {
+            height: "5em"
+        }
+    },
+    logoButton: {
+        padding: "0",//padding used for the logo is converted in button 
+        "&:hover": {  //is used to disable the bgcolor
+            backgroundColor: "transparent"
+        }
+    },
+    tabcontainer: {
+        marginLeft: "auto"
+    },
+    tab: {
+        ...theme.typography.tab, // taking from theme.js 
+        minWidth: 10,//it reduce spaceb/w tabs
+        marginLeft: "25px",
+    },
+    button: {
+        ...theme.typography.estimate,
+        borderRadius: 50,
+        marginLeft: "50px",
+        marginRight: "25px",
+        height: "45px",
+    },
+    menu: {
+        backgroundColor: theme.palette.common.Blue,
+        color: "white"
+    },
+    menuItems: {
+        ...theme.typography.tab,
+        opacity: "0.7",
+        "&:hover": {
+            opacity: "1"
+        }
+    },
+    menudrawer: {
+        height: "45px",
+        width: "50px"
+    },
+    drawerIconContainer: {
+        marginLeft: "auto",
+        "&:hover": {
+            backgroundColor: "transparent"
+        }
+    },
+    drawer: {
+        backgroundColor: theme.palette.common.Blue
+    },
+    drawerItemEstimate: {
+        backgroundColor: theme.palette.common.Orange
+
+    },
+    drawerItem: {
+        ...theme.typography.tabs,
+        color: "white",
+        opacity: "0.5"
+    },
+    drawerItemSelected: {
+        opacity: "1"
+    }
+
+
+}
+
+))
+
+export default function Header() {
+    const classes = useStyles();
+    // formedia and responsive
+    const theme = useTheme();
+
+    // for icons
+    const iOS = process.browser && /iPad|iPhone|iPod/.test(navigator.userAgent);
+
+    // const matches = useMediaQuery(theme.breakpoints.down("md"))
+    const matches = useMediaQuery(theme.breakpoints.down("sm"))
+
+
+
+
+    const [openDrawer, setOpenDrawer] = useState(false) // for MenuIcon
+    const [value, setValue] = useState(0)//tabs
+    const [anchorEl, setAnchorEl] = useState(null) //menus
+    const [openMenu, setOpenMenu] = useState(false)//menus
+    const [selectedIndex, setSelectedIndex] = React.useState(0); //submenus
+
+
+    const handleChange = (e, newValue) => {
+        setValue(newValue) //index (i)  //tabs
+    };
+    // menus
+    const handleClick = e => {
+        setAnchorEl(e.currentTarget) //here when we click the menu it show the menu 
+        setOpenMenu(true) //setOpenMenu is true because the it is closed
+    };
+    const handleClose = e => {
+        setAnchorEl(null)
+        setOpenMenu(false)
+    };
+    // sub menus
+    const handleMenuItemClick = (e, i) => {
+        setAnchorEl(null);
+        setOpenMenu(false)
+        setSelectedIndex(i);
+    };
+
+
+    // menuitems into simple form
+
+    const menuOptions = [{ name: "Services", link: "/services", activeIndex: 1, selectedIndex: 0 },
+    { name: "Custom Software Development", link: "/customsoftware", activeIndex: 1, selectedIndex: 1 },
+    { name: "MobileApp Development", link: "/moblieapps", activeIndex: 1, selectedIndex: 2 },
+    { name: "Website Software Development", link: "/websites", activeIndex: 1, selectedIndex: 2 },
+    ];
+
+
+    const routes = [
+        { name: "Home", link: "/", activeIndex: 0 },
+        {
+            name: "Services", link: "/services", activeIndex: 1,
+            // for  service and tabs
+            ariaowns: anchorEl ? "simple-menu" : undefined,
+            ariaPopups: anchorEl ? "true" : undefined,
+            mouseOver: event => handleClick(event)
+
+
+        },
+        { name: "The Revolution", link: "/revolution", activeIndex: 2 },
+        { name: "About Us", link: "/about", activeIndex: 3 },
+        { name: "Contact Us", link: "/contact", activeIndex: 4 },
+    ];
+
+    // useEffeect is hook to the show url which page currently location in the url 
+    useEffect(() => {
+        // shortformat
+        [...menuOptions, ...routes].forEach(route => {
+            switch (window.location.pathname) {
+                case `${route.link}`:
+                    if (value !== route.activeIndex) {
+                        setValue(route.activeIndex);
+                        if (route.selectedIndex && route.selectedIndex !== selectedIndex) {
+                            setSelectedIndex(route.selectedIndex)
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
+        })
+    }, [value, menuOptions, routes, selectedIndex]);
+
+
+
+
+
+
+    // useEffeect is hook to the show url which page currently location in the url 
+
+    // Longer format
+
+    // if (window.location.pathname === "/" && value !== 0) {
+    //     setValue(0);
+    // } else if (window.location.pathname === "/services" && value !== 1) {
+    //     setValue(1);
+    // }
+    // else if (window.location.pathname === "/revolution" && value !== 2) {
+    //     setValue(2);
+    // }
+    // else if (window.location.pathname === "/about" && value !== 3) {
+    //     setValue(3);
+    // }
+    // else if (window.location.pathname === "/contact" && value !== 4) {
+    //     setValue(4);
+    // }
+    // else if (window.location.pathname === "/estimate" && value !== 5) {
+    //     setValue(5);
+    // }
+    // switch (window.location.pathname) {
+    //     case "/": {
+    //         if (value !== 0) {
+    //             setValue(0)
+    //         }
+    //         break;
+    //     }
+    //     case "/services": {
+    //         if (value !== 1) {
+    //             setValue(1)
+    //             setSelectedIndex(0)
+    //         }
+    //         break;
+    //     }
+    //     case "/customsoftware": {
+    //         if (value !== 1) {
+    //             setValue(1)
+    //             setSelectedIndex(1)
+    //         }
+    //         break;
+    //     }
+    //     case "/moblieapps": {
+    //         if (value !== 1) {
+    //             setValue(1)
+    //             setSelectedIndex(2)
+    //         }
+    //         break;
+    //     }
+
+
+    //     case "/websites": {
+    //         if (value !== 1) {
+    //             setValue(1)
+    //             setSelectedIndex(3)
+    //         }
+    //         break;
+    //     }
+    //     case "/revolution": {
+    //         if (value !== 2) {
+    //             setValue(2)
+    //         }
+    //         break;
+    //     }
+    //     case "/about": {
+    //         if (value !== 3) {
+    //             setValue(3)
+    //         }
+    //         break;
+    //     }
+
+    //     case "/contact": {
+    //         if (value !== 4) {
+    //             setValue(4)
+    //         }
+    //         break;
+    //     }
+    //     case "/estimate": {
+    //         if (value !== 5) {
+    //             setValue(5)
+    //         }
+
+    //         break;
+    //     }
+    //     default:
+    //         break;
+    // }
+    // },[value])
+
+
+    const tabs = (
+        <React.Fragment>
+
+            <Tabs value={value} onChange={handleChange}
+                indicatorColor="primary "
+                className={classes.tabcontainer}
+            >
+
+                {/* short form of code  for tabs*/}
+                {routes.map((route, index) => (
+                    <Tab
+                        key={`${route}${index}`}
+                        className={classes.tab}
+                        component={Link} to={route.link}
+                        label={route.name}
+                        aria-owns={route.ariaowns}
+                        aria-haspopup={route.ariaPopups}
+                        onMouseOver={route.mouseOver} />
+
+
+                ))}
+                {/* 
+                <Tab className={classes.tab}
+                    component={Link} to="/"
+                    label="Home" />
+
+                <Tab
+                    aria-owns={anchorEl ? "simple-menu" : undefined}
+                    aria-haspopup={anchorEl ? "true" : undefined}
+                    className={classes.tab}
+                    onMouseOver={event => handleClick(event)} //we removed mouse menu are disapper
+                    component={Link} to="/services"
+                    label="Services" />
+
+                <Tab className={classes.tab}
+                    component={Link} to="/revolution"
+                    label="The Revolution" />
+                <Tab className={classes.tab}
+                    component={Link} to="/about"
+                    label="About Us" />
+                <Tab className={classes.tab}
+                    component={Link} to="/contact"
+                    label="Contact Us" /> */}
+            </Tabs>
+            <Button variant="contained" color="secondary" className={classes.button}
+                component={Link} to="/estimate"
+            >Free Estimate</Button>
+
+            <Menu id="simple-menu"
+                anchorEl={anchorEl}
+                open={openMenu} //menus
+
+                onClose={handleClose}
+                classes={{ paper: classes.menu }} //for styling menu 
+                MenuListProps={{ onMouseLeave: handleClose }}//we removed mouse menu are disapper
+                elevation={0}
+                keepMounted // for DOM purpose
+
+            >
+                {/* her onclick handleclose used before but the part of routing not showing the current page
+                            so we used the function  IMP :{()=>{handleClose;setValue(1)}} we can use in future
+                            Note here setValue is (1)because which is menu is clicked that is setvalue become updated 
+                         */}
+
+                {/*      for this we have created const menu options                       
+                            <MenuItem onClick={() => { handleClose(); setValue(1) }} component={Link} to="/services" classes={{ root: classes.menuItems }} >Services</MenuItem>
+                            <MenuItem onClick={() => { handleClose(); setValue(1) }} component={Link} to="/customsoftware" classes={{ root: classes.menuItems }}>Custom Software Development</MenuItem>
+                            <MenuItem onClick={() => { handleClose(); setValue(1) }} component={Link} to="/moblieapps" classes={{ root: classes.menuItems }}>Moblie Software Development</MenuItem>
+                            <MenuItem onClick={() => { handleClose(); setValue(1) }} component={Link} to="/websites" classes={{ root: classes.menuItems }}>website Software Development</MenuItem> */}
+
+
+                {menuOptions.map((option, i) => (
+
+                    <MenuItem
+                        key={option}
+
+                        // {/* for routing purpose */} 
+                        component={Link} to={option.link}
+                        // styling
+                        classes={{ root: classes.menuItems }}
+                        // 
+                        onClick={(event) => {
+                            handleMenuItemClick(event, i);
+                            setValue(1);
+                            handleClose()
+                        }
+                        }
+                        selected={i === selectedIndex && value === 1}
+                    // used for which items is selected and show the url
+                    >
+                        {option.name}
+                        {/* used for map the menuitems */}
+
+                    </MenuItem>
+                ))}
+            </Menu>
+        </React.Fragment>
+    );
+
+
+    //    for responsive design
+    const drawer = (
+        <React.Fragment>
+            <SwipeableDrawer disableBackdropTransition={!iOS}
+                disableDiscovery={iOS} open={openDrawer} onClose={() =>
+                    setOpenDrawer(false)} onOpen={() => setOpenDrawer(true)}
+                classes={{ paper: classes.drawer }}>
+                {/* creating drawer list menu */}
+
+
+                <List disablePadding>
+                    {routes.map(route => (
+                        <ListItem
+                            key={`${route}${route.activeIndex}`}
+                            divider button onClick={() => { setOpenDrawer(false); setValue(route.activeIndex) }}
+                            component={Link} to={route.link}
+                            Selected={value === route.activeIndex}>
+                            <ListItemText disableTypography
+                                className={value === route.activeIndex ?
+                                    [classes.drawerItem, classes.drawerItemSelected]
+                                    : classes.drawerItem}>{route.name}</ListItemText>
+                        </ListItem>
+                    ))}
+
+                    <ListItem className={classes.drawerItemEstimate}
+                        onClick={() => { setOpenDrawer(false); setValue(5) }}
+                        divider button component={Link} to="/estimate" Selected={value === 5}>
+                        <ListItemText className={value === 5 ?
+                            [classes.drawerItem, classes.drawerItemSelected]
+                            : classes.drawerItem} disableTypography>Free Estimate</ListItemText>
+                    </ListItem>
+                </List>
+            </SwipeableDrawer>
+
+
+
+            {/* <List disablePadding  > */}
+            {/* herr divider button creates an button and disableTypography removes deafault */}
+            {/* <ListItem onClick={() => { setOpenDrawer(false); setValue(0) }}
+                        divider button
+                        component={Link} to="/"
+                        Selected={value === 0}
+                    >
+                        <ListItemText className={value === 0 ?
+                            [classes.drawerItem, classes.drawerItemSelected]
+                            : classes.drawerItem}
+                            disableTypography
+
+
+                        >Home</ListItemText>
+                    </ListItem>
+                    <ListItem onClick={() => { setOpenDrawer(false); setValue(1) }}
+                        divider button component={Link} to="/services" Selected={value === 1}>
+                        <ListItemText className={value === 1 ?
+                            [classes.drawerItem, classes.drawerItemSelected]
+                            : classes.drawerItem}
+                            disableTypography>Services</ListItemText>
+                    </ListItem>
+                    <ListItem onClick={() => { setOpenDrawer(false); setValue(2) }}
+                        divider button component={Link} to="/revolution" Selected={value === 2}>
+                        <ListItemText className={value === 2 ?
+                            [classes.drawerItem, classes.drawerItemSelected]
+                            : classes.drawerItem} disableTypography>The Revolution</ListItemText>
+                    </ListItem>
+                    <ListItem onClick={() => { setOpenDrawer(false); setValue(3) }}
+                        divider button component={Link} to="/about" Selected={value === 3} >
+                        <ListItemText className={value === 3 ?
+                            [classes.drawerItem, classes.drawerItemSelected]
+                            : classes.drawerItem} disableTypography>About Us</ListItemText>
+                    </ListItem>
+                    <ListItem onClick={() => { setOpenDrawer(false); setValue(4) }}
+                        divider button component={Link} to="/contact" Selected={value === 4}>
+                        <ListItemText className={value === 4 ?
+                            [classes.drawerItem, classes.drawerItemSelected]
+                            : classes.drawerItem} disableTypography>Contact</ListItemText>
+                    </ListItem>
+ <ListItem className={classes.drawerItemEstimate}
+                        onClick={() => { setOpenDrawer(false); setValue(5) }}
+                        divider button component={Link} to="/estimate" Selected={value === 5}>
+                        <ListItemText className={value === 5 ?
+                            [classes.drawerItem, classes.drawerItemSelected]
+                            : classes.drawerItem} disableTypography>Free Estimate</ListItemText>
+                    </ListItem>
+                </List>
+            </SwipeableDrawer>
+                     */}
+
+            <IconButton className={classes.drawerIconContainer} onClick={() => setOpenDrawer(!openDrawer)} disableRipple>
+                <MenuIcon className={classes.menudrawer} />
+            </IconButton>
+        </React.Fragment>
+    );
+
+
+    return (
+        <React.Fragment>
+            <ElevationScroll>
+                <AppBar position="fixed" color="primary">
+                    <Toolbar disableGutters>
+                        {/* disable gutters are used for remove the paddingof the logo */}
+                        <Button component={Link} to="/" className={classes.logoButton}
+                            onClick={() => setValue(0)}
+                            //onclick use for when you click the any tab it shows in url same page name 
+                            //  if you click on home also its shows in that paticular page example about {url/about } it doesn't go the homepage
+                            // so we used the onclick function
+                            disableRipple // used for if click the logo its jumping to overcome we used 
+                        >
+                            <img alt="com" className={classes.logo} src={logo} />
+                        </Button>
+
+                        {matches ? drawer : tabs}
+                    </Toolbar>
+                </AppBar>
+            </ElevationScroll>
+            <div className={classes.toolbarMargin} />
+        </React.Fragment>
+    )
+}

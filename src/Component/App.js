@@ -1,16 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import Header from './UI/Header'
+import Footor from './UI/Footer'
 import theme from "./UI/Theme"
 import { ThemeProvider } from "@material-ui/core";
 import { BrowserRouter, Route, Switch } from "react-router-dom"
 
 export default function App() {
+    const [value, setValue] = useState(0)//tabs
+    const [selectedIndex, setSelectedIndex] = React.useState(0); //submenus
     return (
         <ThemeProvider theme={theme}>
             <BrowserRouter>
-                <Header />
+                <Header value={value} setValue={setValue} selectedIndex={selectedIndex} setSelectedIndex={setSelectedIndex} />
                 <Switch>
-                    <Route exact path="/" component={() => <div>Home</div>} />
+                    <Route exact path="/" component={() => <div style={{ height: "3000px" }} >Home</div>} />
                     <Route exact path="/services" component={() => <div>Services</div>} />
                     <Route exact path="/customsoftware" component={() => <div>Customsoftware</div>} />
                     <Route exact path="/moblieapps" component={() => <div>Moblieapps</div>} />
@@ -21,8 +24,8 @@ export default function App() {
                     <Route exact path="/estimate" component={() => <div>Free Estimate</div>} />
 
                 </Switch>
+                <Footor value={value} setValue={setValue} selectedIndex={selectedIndex} setSelectedIndex={setSelectedIndex} />
             </BrowserRouter>
-
 
 
         </ThemeProvider>

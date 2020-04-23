@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { AppBar, Toolbar, Button, MenuItem, Menu } from "@material-ui/core";
+import { AppBar, Toolbar, Button, MenuItem, Menu, List, ListItem, ListItemText } from "@material-ui/core";
 import useScrollTrigger from '@material-ui/core/useScrollTrigger'; //for scrolling effect
 import { makeStyles } from "@material-ui/styles";
 import Tabs from '@material-ui/core/Tabs';
@@ -9,6 +9,12 @@ import { Link } from "react-router-dom"
 // For responsive design
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { useTheme } from '@material-ui/core/styles';
+
+// menu icons
+import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
+import MenuIcon from '@material-ui/icons/Menu';
+import IconButton from '@material-ui/core/IconButton';
+
 
 
 
@@ -28,10 +34,24 @@ function ElevationScroll(props) {
 const useStyles = makeStyles(theme => ({
     toolbarMargin: {
         ...theme.mixins.toolbar,
-        marginBottom: "2em"
+        marginBottom: "2em",
+        // media  
+        [theme.breakpoints.down("md")]: {
+            marginBottom: "1.5em"
+        },
+        [theme.breakpoints.down("xs")]: {
+            height: "1em"
+        }
     },
     logo: {
-        height: "7em"
+        height: "7em",
+        // media  
+        [theme.breakpoints.down("md")]: {
+            height: "6em"
+        },
+        [theme.breakpoints.down("xs")]: {
+            height: "5em"
+        }
     },
     logoButton: {
         padding: "0",//padding used for the logo is converted in button 
@@ -64,6 +84,37 @@ const useStyles = makeStyles(theme => ({
         "&:hover": {
             opacity: "1"
         }
+    },
+    menudrawer: {
+        height: "45px",
+        width: "50px"
+    },
+    drawerIconContainer: {
+        marginLeft: "auto",
+        "&:hover": {
+            backgroundColor: "transparent"
+        }
+    },
+    drawer: {
+        backgroundColor: theme.palette.common.Blue
+    },
+    drawerItemEstimate: {
+        backgroundColor: theme.palette.common.Orange
+
+    },
+    drawerItem: {
+        ...theme.typography.tabs,
+        color: "white",
+        opacity: "0.5"
+    },
+    drawerItemSelected: {
+        "&.MuiListItemsText-root": {
+            opacity: "1"
+
+        }
+    },
+    appbar: {
+        zIndex: theme.zIndex.modal + 1
     }
 
 
@@ -71,142 +122,217 @@ const useStyles = makeStyles(theme => ({
 
 ))
 
-export default function Header() {
+export default function Header(props) {
     const classes = useStyles();
-    // for mediaquries
+    // formedia and responsive
     const theme = useTheme();
 
-    const [value, setValue] = useState(0)//tabs
+    // for icons
+    const iOS = process.browser && /iPad|iPhone|iPod/.test(navigator.userAgent);
+
+    // const matches = useMediaQuery(theme.breakpoints.down("md"))
+    const matches = useMediaQuery(theme.breakpoints.down("sm"))
+
+
+
+
+    const [openDrawer, setOpenDrawer] = useState(false) // for MenuIcon
+    // const [value, setValue] = useState(0)//tabs we have used this in app.js as props for header and footer
     const [anchorEl, setAnchorEl] = useState(null) //menus
-    const [open, setOpen] = useState(false)//menus
-    const [selectedIndex, setSelectedIndex] = React.useState(1); //submenus
+    const [openMenu, setOpenMenu] = useState(false)//menus
+    // const [selectedIndex, setSelectedIndex] = React.useState(0); //submenus
 
 
-    const handleChange = ((e, i) => {
-        setValue(i) //index (i)  //tabs
-    })
+    const handleChange = (e, newValue) => {
+        props.setValue(newValue) //index (i)  //tabs
+    };
     // menus
-    const handleClick = (e) => {
+    const handleClick = e => {
         setAnchorEl(e.currentTarget) //here when we click the menu it show the menu 
-        setOpen(true) //setopen is true because the it is closed
-    }
-    const handleClose = (e) => {
+        setOpenMenu(true) //setOpenMenu is true because the it is closed
+    };
+    const handleClose = e => {
         setAnchorEl(null)
-        setOpen(false)
-    }
+        setOpenMenu(false)
+    };
     // sub menus
     const handleMenuItemClick = (e, i) => {
         setAnchorEl(null);
-        setOpen(false)
-        setSelectedIndex(i);
+        setOpenMenu(false)
+        props.setSelectedIndex(i);
     };
 
 
     // menuitems into simple form
 
-    const menuOptions = [{ name: "Services", link: "/services" },
-    { name: "Custom Software Development", link: "/customsoftware" },
-    { name: "MobileApp Development", link: "/moblieapps" },
-    { name: "Website Software Development", link: "/websites" },
-    ]
+    const menuOptions = [{ name: "Services", link: "/services", activeIndex: 1, selectedIndex: 0 },
+    { name: "Custom Software Development", link: "/customsoftware", activeIndex: 1, selectedIndex: 1 },
+    { name: "MobileApp Development", link: "/moblieapps", activeIndex: 1, selectedIndex: 2 },
+    { name: "Website Software Development", link: "/websites", activeIndex: 1, selectedIndex: 2 },
+    ];
 
+
+    const routes = [
+        { name: "Home", link: "/", activeIndex: 0 },
+        {
+            name: "Services", link: "/services", activeIndex: 1,
+            // for  service and tabs
+            ariaowns: anchorEl ? "simple-menu" : undefined,
+            ariaPopups: anchorEl ? "true" : undefined,
+            mouseOver: event => handleClick(event)
+
+
+        },
+        { name: "The Revolution", link: "/revolution", activeIndex: 2 },
+        { name: "About Us", link: "/about", activeIndex: 3 },
+        { name: "Contact Us", link: "/contact", activeIndex: 4 },
+    ];
 
     // useEffeect is hook to the show url which page currently location in the url 
     useEffect(() => {
-        if (window.location.pathname === "/" && value !== 0) {
-            setValue(0);
-        } else if (window.location.pathname === "/services" && value !== 1) {
-            setValue(1);
-        }
-        else if (window.location.pathname === "/revolution" && value !== 2) {
-            setValue(2);
-        }
-        else if (window.location.pathname === "/about" && value !== 3) {
-            setValue(3);
-        }
-        else if (window.location.pathname === "/contact" && value !== 4) {
-            setValue(4);
-        }
-        else if (window.location.pathname === "/estimate" && value !== 5) {
-            setValue(5);
-        }
-        switch (window.location.pathname) {
-            case "/": {
-                if (value !== 0) {
-                    setValue(0)
-                }
-                break;
+        // shortformat
+        [...menuOptions, ...routes].forEach(route => {
+            switch (window.location.pathname) {
+                case `${route.link}`:
+                    if (props.value !== route.activeIndex) {
+                        props.setValue(route.activeIndex);
+                        if (route.selectedIndex && route.selectedIndex !== props.selectedIndex) {
+                            props.setSelectedIndex(route.selectedIndex)
+                        }
+                    }
+                    break;
+                default:
+                    break;
             }
-            case "/services": {
-                if (value !== 1) {
-                    setValue(1)
-                    setSelectedIndex(0)
-                }
-                break;
-            }
-            case "/customsoftware": {
-                if (value !== 1) {
-                    setValue(1)
-                    setSelectedIndex(1)
-                }
-                break;
-            }
-            case "/moblieapps": {
-                if (value !== 1) {
-                    setValue(1)
-                    setSelectedIndex(2)
-                }
-                break;
-            }
+        })
+    }, [props.value, menuOptions, routes, props.selectedIndex, props]);
 
 
-            case "/websites": {
-                if (value !== 1) {
-                    setValue(1)
-                    setSelectedIndex(3)
-                }
-                break;
-            }
-            case "/revolution": {
-                if (value !== 2) {
-                    setValue(2)
-                }
-                break;
-            }
-            case "/about": {
-                if (value !== 3) {
-                    setValue(3)
-                }
-                break;
-            }
 
-            case "/contact": {
-                if (value !== 4) {
-                    setValue(4)
-                }
-                break;
-            }
-            case "/estimate": {
-                if (value !== 5) {
-                    setValue(5)
-                }
 
-                break;
-            }
-            default:
-                break;
-        }
 
-    }, [value])
+
+    const tabs = (
+        <React.Fragment>
+
+            <Tabs value={props.value} onChange={handleChange}
+                indicatorColor='primary'
+                className={classes.tabcontainer}
+            >
+
+                {/* short form of code  for tabs*/}
+                {routes.map((route, index) => (
+                    <Tab
+                        key={`${route}${index}`}
+                        className={classes.tab}
+                        component={Link} to={route.link}
+                        label={route.name}
+                        aria-owns={route.ariaowns}
+                        aria-haspopup={route.ariaPopups}
+                        onMouseOver={route.mouseOver} />
+                ))}
+            </Tabs>
+            <Button variant="contained" color="secondary" className={classes.button}
+                component={Link} to="/estimate">Free Estimate</Button>
+
+            <Menu id="simple-menu"
+                anchorEl={anchorEl}
+                open={openMenu} //menus
+                onClose={handleClose}
+                classes={{ paper: classes.menu }} //for styling menu 
+                MenuListProps={{ onMouseLeave: handleClose }}//we removed mouse menu are disapper
+                elevation={0}
+                keepMounted // for DOM purpose
+                style={{ zIndex: 1302 }}
+            >
+
+                {menuOptions.map((option, i) => (
+                    <MenuItem
+                        // key={{option}
+                        key={`${option}${i}`}
+                        // {/* for routing purpose */} 
+                        component={Link} to={option.link}
+                        // styling
+                        classes={{ root: classes.menuItems }}
+                        // 
+                        onClick={(event) => {
+                            handleMenuItemClick(event, i);
+                            props.setValue(1);
+                            handleClose()
+                        }
+                        }
+                        selected={i === props.selectedIndex && props.value === 1}
+                    // used for which items is selected and show the url
+                    >
+                        {option.name}
+                        {/* used for map the menuitems */}
+
+                    </MenuItem>
+                ))}
+            </Menu>
+        </React.Fragment>
+    );
+
+
+    //    for responsive design
+    const drawer = (
+        <React.Fragment>
+            <SwipeableDrawer disableBackdropTransition={!iOS}
+                disableDiscovery={iOS} open={openDrawer} onClose={() =>
+                    setOpenDrawer(false)} onOpen={() => setOpenDrawer(true)}
+                classes={{ paper: classes.drawer }}>
+                {/* creating drawer list menu */}
+
+                <div className={classes.toolbarMargin} />
+
+                <List disablePadding>
+                    {routes.map(route => (
+                        <ListItem
+                            key={`${route}${route.activeIndex}`}
+                            divider button onClick={() => { setOpenDrawer(false); props.setValue(route.activeIndex) }}
+                            component={Link} to={route.link}
+                            Selected={props.value === route.activeIndex}
+                            classes={{ selected: classes.drawerItemSelected }}
+                        >
+                            <ListItemText disableTypography
+                                className={classes.drawerItem}>{route.name}
+                                {  /* for console error we are changing into above code                                     
+                                       
+                                        
+                                         {props.value === route.activeIndex ?
+                                    
+                                    [classes.drawerItem, classes.drawerItemSelected]
+                                    : classes.drawerItem}>{route.name}
+                                     */}
+                            </ListItemText>
+                        </ListItem>
+                    ))}
+
+                    <ListItem classes={{ root: classes.drawerItemEstimate, selected: classes.drawerItemSelected }}
+                        onClick={() => { setOpenDrawer(false); props.setValue(5) }}
+                        divider button component={Link} to="/estimate"
+                        Selected={props.value === 5}>
+                        <ListItemText
+                            className={classes.drawerItem}
+                            disableTypography>Free Estimate</ListItemText>
+                    </ListItem>
+                </List>
+            </SwipeableDrawer>
+            <IconButton className={classes.drawerIconContainer} onClick={() => setOpenDrawer(!openDrawer)} disableRipple>
+                <MenuIcon className={classes.menudrawer} />
+            </IconButton>
+        </React.Fragment>
+    );
+
 
     return (
         <React.Fragment>
             <ElevationScroll>
-                <AppBar position="fixed" color="primary">
+                <AppBar position="fixed" className={classes.appbar} >
                     <Toolbar disableGutters>
                         {/* disable gutters are used for remove the paddingof the logo */}
                         <Button component={Link} to="/" className={classes.logoButton}
-                            onClick={() => setValue(0)}
+                            onClick={() => props.setValue(0)}
                             //onclick use for when you click the any tab it shows in url same page name 
                             //  if you click on home also its shows in that paticular page example about {url/about } it doesn't go the homepage
                             // so we used the onclick function
@@ -215,84 +341,7 @@ export default function Header() {
                             <img alt="com" className={classes.logo} src={logo} />
                         </Button>
 
-                        <Tabs value={value} onChange={handleChange}
-                            indicatorColor="primary "
-                            className={classes.tabcontainer}>
-
-
-                            <Tab className={classes.tab}
-                                component={Link} to="/"
-                                label="Home" />
-
-                            <Tab
-                                aria-owns={anchorEl ? "simple-menu" : undefined}
-                                aria-haspopup={anchorEl ? "true" : undefined}
-                                className={classes.tab}
-                                onMouseOver={event => handleClick(event)} //we removed mouse menu are disapper
-                                component={Link} to="/services"
-                                label="Services" />
-
-                            <Tab className={classes.tab}
-                                component={Link} to="/revolution"
-                                label="The Revolution" />
-                            <Tab className={classes.tab}
-                                component={Link} to="/about"
-                                label="About Us" />
-                            <Tab className={classes.tab}
-                                component={Link} to="/contact"
-                                label="Contact Us" />
-                        </Tabs>
-                        <Button variant="contained" color="secondary" className={classes.button}
-                            component={Link} to="/estimate"
-                        >Free Estimate</Button>
-
-                        <Menu id="simple-menu"
-                            anchorEl={anchorEl}
-                            open={open}
-                            onClose={handleClose}
-                            classes={{ paper: classes.menu }} //for styling menu 
-                            MenuListProps={{ onMouseLeave: handleClose }}//we removed mouse menu are disapper
-                            elevation={0}
-                        >
-                            {/* her onclick handleclose used before but the part of routing not showing the current page
-                            so we used the function  IMP :{()=>{handleClose;setValue(1)}} we can use in future
-                            Note here setValue is (1)because which is menu is clicked that is setvalue become updated 
-                         */}
-
-                            {/*      for this we have created const menu options                       
-                            <MenuItem onClick={() => { handleClose(); setValue(1) }} component={Link} to="/services" classes={{ root: classes.menuItems }} >Services</MenuItem>
-                            <MenuItem onClick={() => { handleClose(); setValue(1) }} component={Link} to="/customsoftware" classes={{ root: classes.menuItems }}>Custom Software Development</MenuItem>
-                            <MenuItem onClick={() => { handleClose(); setValue(1) }} component={Link} to="/moblieapps" classes={{ root: classes.menuItems }}>Moblie Software Development</MenuItem>
-                            <MenuItem onClick={() => { handleClose(); setValue(1) }} component={Link} to="/websites" classes={{ root: classes.menuItems }}>website Software Development</MenuItem> */}
-
-
-                            {menuOptions.map((option, i) => (
-
-                                <MenuItem
-                                    key={option}
-
-                                    // {/* for routing purpose */} 
-                                    component={Link} to={option.link}
-                                    // styling
-                                    classes={{ root: classes.menuItems }}
-                                    // 
-                                    onClick={(event) => {
-                                        handleMenuItemClick(event, i);
-                                        setValue(1);
-                                        handleClose()
-                                    }
-                                    }
-                                    selected={i === selectedIndex && value === 1}
-                                // used for which items is selected and show the url
-                                >
-                                    {option.name}
-                                    {/* used for map the menuitems */}
-
-                                </MenuItem>
-                            ))}
-
-
-                        </Menu>
+                        {matches ? drawer : tabs}
                     </Toolbar>
                 </AppBar>
             </ElevationScroll>
