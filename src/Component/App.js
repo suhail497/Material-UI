@@ -4,6 +4,7 @@ import Footor from './UI/Footer'
 import theme from "./UI/Theme"
 import { ThemeProvider } from "@material-ui/core";
 import { BrowserRouter, Route, Switch } from "react-router-dom"
+import LandingPage from "./LandingPage";
 
 export default function App() {
     const [value, setValue] = useState(0)//tabs
@@ -13,7 +14,7 @@ export default function App() {
             <BrowserRouter>
                 <Header value={value} setValue={setValue} selectedIndex={selectedIndex} setSelectedIndex={setSelectedIndex} />
                 <Switch>
-                    <Route exact path="/" component={() => <div style={{ height: "3000px" }} >Home</div>} />
+                    <Route exact path="/" component={LandingPage} />
                     <Route exact path="/services" component={() => <div>Services</div>} />
                     <Route exact path="/customsoftware" component={() => <div>Customsoftware</div>} />
                     <Route exact path="/moblieapps" component={() => <div>Moblieapps</div>} />
